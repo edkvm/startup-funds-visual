@@ -21,7 +21,7 @@
       this.data = data;
       this.width = width;
       this.height = height;
-      this.tooltip = CustomTooltip("gates_tooltip", 240);
+      this.tooltip = CustomTooltip("startup_funding_tooltip", 240);
       this.center = {
         x: 100 + this.width / 2 ,
         y: this.height / 2

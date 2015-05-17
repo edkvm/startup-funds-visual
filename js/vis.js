@@ -12,7 +12,6 @@
       this.display_years = __bind(this.display_years, this);
       this.move_towards_year = __bind(this.move_towards_year, this);
       this.display_by_group = __bind(this.display_by_group, this);
-      this.display_group_all = __bind(this.display_group_all, this);
       this.start = __bind(this.start, this);
       this.render = __bind(this.render, this);
       this.create_nodes = __bind(this.create_nodes, this);
@@ -44,9 +43,7 @@
         return parseInt(d.amount);
       });
 
-      this.data_mean = d3.mean(this.data, function(d) {
-        return parseInt(d.amount);
-      });
+      
       
       this.radius_scale = d3.scale.pow().exponent(0.5).domain([0, max_amount]).range([4, 65]);
       this.create_nodes();
@@ -124,9 +121,28 @@
         return self.hide_details(d, i, this);
       });
       
+      // Total investment
+      this.vis.append("text")
+        .attr("x", 20)
+        .attr("y",500)
+        .text("$0")
+        .attr("class","system-font sum")
+        .attr("id", "money")
+        .attr("fill", "black");  
+
+      // Total investment
+      this.vis.append("text")
+        .attr("x", 900)
+        .attr("y",500)
+        .text("$0")
+        .attr("class","system-font sum")
+        .attr("id", "quantity")
+        .attr("fill", "black"); 
+
       return this.circles.transition().duration(2000).attr("r", function(d) {
         return d.radius;
       });
+    
     };
     
     
@@ -136,36 +152,6 @@
 
     BubbleChart.prototype.start = function() {
       return this.force = d3.layout.force().nodes(this.nodes).size([this.width, this.height]);
-    };
-
-    BubbleChart.prototype.display_group_all = function() {
-      var self = this;
-      var counter = 0;
-      
-      this.force
-          .gravity(this.layout_gravity)
-          .charge(this.charge)
-          .friction(0.9)
-          .on("tick", function(e) {
-              return self.circles
-                  .each(self.move_towards_target(
-                      e.alpha, 
-                      function(d) {
-
-                          return self.center;
-                      })
-          )
-          .each(function (d) {
-            // Does not traverse the DOM
-            d3.select(this).attr({
-              cx: d.x,
-              cy: d.y    
-            })
-          });
-      });
-      
-      return this.force.start();
-    
     };
 
     BubbleChart.prototype.display_by_group = function(list) {
@@ -212,13 +198,18 @@
             });
       });
 
-      if(list.length == 1){
-        var z = d3.behavior.zoom();
-        z.sacle(5);  
-      } 
-
+      var sum = 0;
+      var count = 0;
+      this.nodes.forEach( function (d) {
+        
+        if(group.indexOf(d.group) >= 0){
+          count = count + 1;
+          sum = sum + parseInt(d.value);
+        } 
+      });
       
-      
+      d3.select("#money").text('$' + addCommas(sum));
+      d3.select("#quantity").text('#' + addCommas(count));
       return this.force.start();
 
     };

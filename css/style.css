@@ -26,6 +26,10 @@ text.title {
 
 }
 
+.sum {
+  font-size: 60px;
+}
+
 text.investor.odd {
   font-size: 40px;
   fill: #02020A;

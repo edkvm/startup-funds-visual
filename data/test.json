@@ -2657,19 +2657,6 @@
     }, 
     {
         "vc_list": [
-            "Benchmark", 
-            "Techstars"
-        ], 
-        "description": "Grockit, an online test prep platform leveraging adaptive learning engine and offering social learning and game mechanics.", 
-        "funding_date": "2014-07-24T00:00:00", 
-        "name": "Grockit", 
-        "amount": 20020000, 
-        "year": 2014, 
-        "id": 1644, 
-        "stage": "Seed Round"
-    }, 
-    {
-        "vc_list": [
             "Index Ventures", 
             "Pitango Venture Capital"
         ], 

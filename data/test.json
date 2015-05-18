@@ -238,12 +238,12 @@
             "Qualcomm Ventures"
         ], 
         "description": "With 85 Million Users, BlueStacks is the Bridge Between Mobile and PC", 
-        "funding_date": "2013-03-05T00:00:00", 
+        "funding_date": "2011-10-20T00:00:00", 
         "name": "BlueStacks", 
         "amount": 6400000, 
         "year": 2013, 
         "id": 1356, 
-        "stage": "Round"
+        "stage": "Series B"
     }, 
     {
         "vc_list": [
@@ -698,7 +698,7 @@
         "amount": 3300000, 
         "year": 2013, 
         "id": 3726, 
-        "stage": "Round"
+        "stage": "Series B"
     }, 
     {
         "vc_list": [
@@ -2657,6 +2657,19 @@
     }, 
     {
         "vc_list": [
+            "Benchmark", 
+            "Techstars"
+        ], 
+        "description": "Grockit, an online test prep platform leveraging adaptive learning engine and offering social learning and game mechanics.", 
+        "funding_date": "2014-07-24T00:00:00", 
+        "name": "Grockit", 
+        "amount": 20020000, 
+        "year": 2014, 
+        "id": 1644, 
+        "stage": "Seed Round"
+    }, 
+    {
+        "vc_list": [
             "Index Ventures", 
             "Pitango Venture Capital"
         ], 
@@ -3814,20 +3827,7 @@
         "year": 2014, 
         "id": 119, 
         "stage": "Series A"
-    }, 
-    {
-        "vc_list": [
-            "Bessemer Venture Partners", 
-            "Intel Capital"
-        ], 
-        "description": "Hungama Digital Media Entertainment. is the largest aggregator, developer, publisher and distributor of Bollywood and South-Asian content.", 
-        "funding_date": "2015-03-19T00:00:00", 
-        "name": "Hungama Digital Media Entertainment Pvt. Ltd.", 
-        "amount": 100000000, 
-        "year": 2015, 
-        "id": 1783, 
-        "stage": "Round"
-    }, 
+    },
     {
         "vc_list": [
             "Accel Partners", 
@@ -4814,12 +4814,12 @@
             "Qualcomm Ventures"
         ], 
         "description": "Portea Medical is the largest and fastest growing provider of in-home medical care in India today with a 24-city network.", 
-        "funding_date": "2014-07-31T00:00:00", 
+        "funding_date": "2013-12-02T00:00:00", 
         "name": "Portea Medical", 
         "amount": 8000000, 
         "year": 2014, 
         "id": 774, 
-        "stage": "Round"
+        "stage": "Private Equity"
     }, 
     {
         "vc_list": [
@@ -6321,7 +6321,7 @@
         "amount": 840000, 
         "year": 2014, 
         "id": 3637, 
-        "stage": "Round"
+        "stage": ""
     }, 
     {
         "vc_list": [
@@ -6391,7 +6391,7 @@
         "amount": 0, 
         "year": 2014, 
         "id": 1210, 
-        "stage": "Round"
+        "stage": ""
     }, 
     {
         "vc_list": [
@@ -7020,7 +7020,7 @@
         "amount": 1100000, 
         "year": 2012, 
         "id": 6375, 
-        "stage": "Round"
+        "stage": "Seed Round"
     }, 
     {
         "vc_list": [
@@ -9715,7 +9715,7 @@
         "amount": 0, 
         "year": 2013, 
         "id": 2874, 
-        "stage": "Round"
+        "stage": ""
     }, 
     {
         "vc_list": [
@@ -11278,7 +11278,7 @@
         "amount": 1200000, 
         "year": 2013, 
         "id": 393, 
-        "stage": "Round"
+        "stage": "Angel Round"
     }, 
     {
         "vc_list": [
@@ -11629,12 +11629,12 @@
             "Max Levchin"
         ], 
         "description": "Indiegogo is a global crowdfunding platform empowering people around the world to fund projects that matter to them.", 
-        "funding_date": "2014-05-20T00:00:00", 
+        "funding_date": "2014-01-28T00:00:00", 
         "name": "Indiegogo", 
         "amount": 40000000, 
         "year": 2014, 
         "id": 4211, 
-        "stage": "Round"
+        "stage": "Series B"
     }, 
     {
         "vc_list": [

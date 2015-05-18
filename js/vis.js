@@ -112,12 +112,14 @@
           d3.select("text#vc-title-" + counter).text(name);  
           return true;
         });
+        
         return self.show_details(d, i, this);
       })
       .on("mouseout", function(d, i) {
         for(var i = 1; i < 7; i++){
           d3.select("text#vc-title-" + i).text(""); 
         }
+        console.log("out" + this)
         return self.hide_details(d, i, this);
       });
       
@@ -208,7 +210,7 @@
         } 
       });
       
-      d3.select("#money").text('$' + addCommas(sum));
+      d3.select("#money").text('$' + addScale(sum));
       d3.select("#quantity").text('#' + addCommas(count));
       return this.force.start();
 
@@ -228,7 +230,7 @@
       var content;
       d3.select(element).attr("stroke", "black");
       content = "<span class=\"name\">Title:</span><span class=\"value\"> " + data.name + "</span><br/>";
-      content += "<span class=\"name\">Amount:</span><span class=\"value\"> $" + (addCommas(data.value)) + "</span><br/>";
+      content += "<span class=\"name\">Amount:</span><span class=\"value\"> $" + (addScale(data.value)) +  "</span><br/>";
       content += "<span class=\"name\">Last Round:</span><span class=\"value\"> " + data.group + "</span><br/>";
       content += "<span class=\"name\">Year:</span><span class=\"value\"> " + data.year + "</span>";
 

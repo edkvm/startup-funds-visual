@@ -38,7 +38,7 @@ function CustomTooltip(tooltipId, width){
 		 if (tttop < wscrY + yOffset){
 		 	tttop = curY + yOffset;
 		 } 
-		 $(ttid).css('top', tttop + 'px').css('left', ttleft + 'px');
+		 //$(ttid).css('top', tttop + 'px').css('left', ttleft + 'px');
 	}
 	
 	return {

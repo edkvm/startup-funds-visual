@@ -20,9 +20,9 @@
       this.data = data;
       this.width = width;
       this.height = height;
-      this.tooltip = CustomTooltip("startup_funding_tooltip", 140);
+      this.tooltip = CustomTooltip("startup_funding_tooltip", 210);
       this.center = {
-        x: 100 + this.width / 2 ,
+        x: this.width / 2 ,
         y: this.height / 2
       };
       this.off_screen = {
@@ -36,9 +36,13 @@
       this.force = null;
       this.circles = null;
       this.selected = false;
+      this.currentSelection = null;
       this.fill_color = d3.scale.ordinal()
         .domain(["Angel Round", "Seed Round", "Series A", "Series B", "Series C", "Series D", "Series E", "Series F", "Series G", "Private Equity"])
         .range(["#72AEE3","#72AEE3", "#9DC6EB", "#C7DFF4", "#FCD800", "#FC9C00", "#FC4300",  "#FC4300", "#FC4300", "#6D992F"]);
+      this.fill_color_grayscale = d3.scale.ordinal()
+        .domain(["Angel Round", "Seed Round", "Series A", "Series B", "Series C", "Series D", "Series E", "Series F", "Series G", "Private Equity"])
+        .range(["#E1E2EF", "#CDCDCD"]);  
       max_amount = d3.max(this.data, function(d) {
         
         return parseInt(d.amount);
@@ -51,6 +55,7 @@
       this.render();
     }
 
+    
     BubbleChart.prototype.create_nodes = function() {
       var self = this;
       
@@ -137,7 +142,7 @@
       })
       .on("click", function(d, i) {
         if(!self.selected) {
-          console.log("sel");
+          self.currentSelection = this;
           self.selected = true;
           var counter = 0
           
@@ -147,13 +152,29 @@
             return true;
           });
 
-          d3.selectAll(".bubble").attr("fill-opacity", 0.2);
-          d3.select(this).attr("fill-opacity", 0.8);
+          d3.selectAll(".bubble")
+            .attr({ 
+              "fill-opacity": 0.2,
+              fill: self.fill_color_grayscale(d.group)
+            });
+          d3.select(this).attr({ 
+            "fill-opacity": 0.8,
+            fill: self.fill_color(d.group)
+          });
 
         } else {
           self.selected = false;
-          d3.selectAll(".bubble").attr("fill-opacity", 0.8);
+          d3.selectAll(".bubble").each(function(data){
+            d3.select(this).attr({ 
+              "fill-opacity": 0.8,
+              fill: self.fill_color(data.group)
+            });
+          });
+          
+          self.hide_details(d, i, self.currentSelection);
           return self.show_details(d, i, this);
+          
+          
         }
 
       });
@@ -264,7 +285,7 @@
     BubbleChart.prototype.show_details = function(data, i, element) {
       var content;
       d3.select(element).attr("stroke", "black");
-      content = "<span class=\"name\">Title:</span><span class=\"value\"> " + data.name + "</span><br/>";
+      content = "<span class=\"name\"></span><span class=\"value\"> " + data.name + "</span><br/>";
       content += "<span class=\"name\">Amount:</span><span class=\"value\"> $" + (addScale(data.value)) +  "</span><br/>";
       content += "<span class=\"name\">Last Round:</span><span class=\"value\"> " + data.group + "</span><br/>";
       content += "<span class=\"name\">Year:</span><span class=\"value\"> " + data.year + "</span>";
@@ -288,8 +309,17 @@
   
   var DataLabels = (function() {
         
+        
         // Constructor        
         function DataLabels(data, container, width, height) {
+            this.selected = false;
+            this.fill_color = d3.scale.ordinal()
+              .domain(["Angel Round", "Seed Round", "Series A", "Series B", "Series C", "Series D", "Series E", "Series F", "Series G", "Private Equity"])
+              .range(["#72AEE3","#72AEE3", "#9DC6EB", "#C7DFF4", "#FCD800", "#FC9C00", "#FC4300",  "#FC4300", "#FC4300", "#6D992F"]);
+            this.fill_color_grayscale = d3.scale.ordinal()
+              .domain(["Angel Round", "Seed Round", "Series A", "Series B", "Series C", "Series D", "Series E", "Series F", "Series G", "Private Equity"])
+              .range(["#E1E2EF", "#CDCDCD"]);  
+
             // Holdes the data
             this.data = data;
 
@@ -307,19 +337,17 @@
 
 
         DataLabels.prototype.render = function () {
+            var self = this;
+
             this.vis = d3.select(this.container + " svg");
             
             if(this.vis === null || this.vis === 'undefined') {
                 console.log("Vis is not loaded");
             }
 
-            var startPointY = 100;
-                
-                
-
-            //this.data = [{ id: 1, name: 'ddd'},{ id: 2, name: '2ddd'}];
+            var startPointY = 50;
             
-            var self = this;
+            
             
             var defs = this.vis.append("defs");
 
@@ -342,12 +370,13 @@
                             .enter().append("g")
                             .attr("class","vc lable");
             
-            var currentY = startPointY + 20,
+            var currentY = startPointY + 10,
                 counter = 0;
             
             lablesContainer.append("title")
                 .text(function(d) { return d.name; });
 
+            
             lablesContainer.append("text")
                 .attr("x", 25)
                 .each(function (d){
@@ -364,6 +393,41 @@
                         "class":  "investor "+ title_class_pos +" system-font",
                         id: "vc-title-" + counter
                     }).text("");    
+                })
+                .on("click", function(d, i){
+                  var content = this.textContent;
+                  
+                  if(!self.selected) {
+                    $("#startup_funding_tooltip").hide();
+                    self.selected = true;
+                    d3.selectAll("circle")
+                      .each(function(data) {
+                        
+                        if(data.org.indexOf(content) >= 0){
+                          d3.select(this).attr({
+                            "fill-opacity": 1,
+                            fill: self.fill_color(data.group)
+                          });
+
+                        }
+                      });
+                  } else {
+                    
+                    self.selected = false;
+                    d3.selectAll("circle")
+                      .each(function(data) {
+                        
+                        if(data.org.indexOf(content) >= 0){
+                          d3.select(this).attr({
+                            "fill-opacity": 0.2,
+                            fill: self.fill_color_grayscale(data.group)
+                          });
+
+                        }
+                      });
+                  }
+
+
                 });
                 
         };

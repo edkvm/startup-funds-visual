@@ -20,7 +20,7 @@
       this.data = data;
       this.width = width;
       this.height = height;
-      this.tooltip = CustomTooltip("startup_funding_tooltip", 240);
+      this.tooltip = CustomTooltip("startup_funding_tooltip", 140);
       this.center = {
         x: 100 + this.width / 2 ,
         y: this.height / 2
@@ -35,6 +35,7 @@
       this.nodes = [];
       this.force = null;
       this.circles = null;
+      this.selected = false;
       this.fill_color = d3.scale.ordinal()
         .domain(["Angel Round", "Seed Round", "Series A", "Series B", "Series C", "Series D", "Series E", "Series F", "Series G", "Private Equity"])
         .range(["#72AEE3","#72AEE3", "#9DC6EB", "#C7DFF4", "#FCD800", "#FC9C00", "#FC4300",  "#FC4300", "#FC4300", "#6D992F"]);
@@ -80,6 +81,7 @@
       });
     };
 
+
     BubbleChart.prototype.render = function() {
       var self = this;
       
@@ -99,28 +101,61 @@
           r: 0,
           fill: fill_color,
           "fill-opacity": 0.8,
-          "stroke-width": 1.5,
+          "stroke-width": 1,
           stroke: stroke_color,
-          id: "bubble_" + d.id
+          id: "bubble_" + d.id,
+          "class": "bubble"
 
         });  
+
+        
+
       })
       .on("mouseover", function(d, i) {
-        var counter = 0
-        d.org.forEach(function(name){
-          counter = counter + 1;
-          d3.select("text#vc-title-" + counter).text(name);  
-          return true;
-        });
-        
-        return self.show_details(d, i, this);
+        if(!self.selected) {
+          var counter = 0
+          
+          d.org.forEach(function(name){
+            counter = counter + 1;
+            d3.select("text#vc-title-" + counter).text(name);  
+            return true;
+          });
+
+          
+          d3.select(this).attr("fill-opacity", 0.8);
+
+          return self.show_details(d, i, this);
+        }
       })
       .on("mouseout", function(d, i) {
-        for(var i = 1; i < 7; i++){
-          d3.select("text#vc-title-" + i).text(""); 
+        if(!self.selected) {
+          for(var i = 1; i < 7; i++){
+            d3.select("text#vc-title-" + i).text(""); 
+          }
+          return self.hide_details(d, i, this);
         }
-        console.log("out" + this)
-        return self.hide_details(d, i, this);
+      })
+      .on("click", function(d, i) {
+        if(!self.selected) {
+          console.log("sel");
+          self.selected = true;
+          var counter = 0
+          
+          d.org.forEach(function(name){
+            counter = counter + 1;
+            d3.select("text#vc-title-" + counter).text(name);  
+            return true;
+          });
+
+          d3.selectAll(".bubble").attr("fill-opacity", 0.2);
+          d3.select(this).attr("fill-opacity", 0.8);
+
+        } else {
+          self.selected = false;
+          d3.selectAll(".bubble").attr("fill-opacity", 0.8);
+          return self.show_details(d, i, this);
+        }
+
       });
       
       // Total investment
@@ -141,13 +176,13 @@
         .attr("id", "quantity")
         .attr("fill", "black"); 
 
-      return this.circles.transition().duration(2000).attr("r", function(d) {
+      return this.circles.transition().duration(1000).attr("r", function(d) {
         return d.radius;
       });
     
     };
     
-    
+        
     BubbleChart.prototype.charge = function(d) {
       return -Math.pow(d.radius, 2.0) / 7 ;
     };

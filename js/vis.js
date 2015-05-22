@@ -36,6 +36,7 @@
       this.force = null;
       this.circles = null;
       this.selected = false;
+      this.investorSelected = false;
       this.currentSelection = null;
       this.fill_color = d3.scale.ordinal()
         .domain(["Angel Round", "Seed Round", "Series A", "Series B", "Series C", "Series D", "Series E", "Series F", "Series G", "Private Equity"])
@@ -92,6 +93,10 @@
       
       this.vis = d3.select(this.container).append("svg").attr("width", "100%").attr("height", this.height).attr("id", "svg_vis");
       
+      this.vis.on("click", function() { 
+        //self.selected = false;  
+      });
+
       this.circles = this.vis.selectAll("circle").data(this.nodes, function(d) {
         return d.id;
       });
@@ -197,7 +202,7 @@
         .attr("id", "quantity")
         .attr("fill", "black"); 
 
-      return this.circles.transition().duration(1000).attr("r", function(d) {
+      return this.circles.transition().duration(2000).attr("r", function(d) {
         return d.radius;
       });
     
@@ -302,139 +307,99 @@
       return this.tooltip.hideTooltip();
     };
 
+    BubbleChart.prototype.lables_placeholder = function(json) {
+
+      var self = this;
+
+      // Holdes the data
+      var data = json;
+      var startPointY = 50;
+      function drawTitle(vis, x, y, text) {
+      
+        // Title
+        vis.append("text")
+          .attr("x", x)
+          .attr("y",y)
+          .text(text)
+          .attr("class","title system-font")
+          .attr("fill", "black"); 
+      }
+        
+      drawTitle(this.vis, 20, startPointY, "INVESTORS:");
+      drawTitle(this.vis, 840, startPointY, "COMPANIES:");
+      var lablesContainer = this.vis
+                      .selectAll("g")
+                      .data(data, function(d) {
+                          return d.id;
+                      })
+                      .enter().append("g")
+                      .attr("class","vc lable");
+      
+      var currentY = startPointY + 10,
+          counter = 0;
+      
+      lablesContainer.append("title")
+          .text(function(d) { return d.name; });
+
+      
+      lablesContainer.append("text")
+          .attr("x", 25)
+          .each(function (d){
+              counter = counter + 1;
+              title_class_pos = "odd";
+              if( counter % 2  == 0) {
+                title_class_pos = "even";
+              }
+              var tempY = currentY;
+              currentY= currentY + 32;
+              
+              d3.select(this).attr({
+                  y: currentY,
+                  "class":  "investor "+ title_class_pos +" system-font",
+                  id: "vc-title-" + counter
+              }).text("");    
+          })
+          .on("click", function(d, i){
+            var content = this.textContent;
+            var count = 1;
+            if(!this.investorSelected) {
+              $("#startup_funding_tooltip").hide();
+              self.investorSelected = true;
+              d3.selectAll("circle")
+                .each(function(data) {
+                  
+                  if(data.org.indexOf(content) >= 0){
+                    d3.select(this).attr({
+                      "fill-opacity": 1,
+                      fill: self.fill_color(data.group)
+                    });
+
+                  }
+                });
+            } else {
+              
+              self.investorSelected = false;
+              d3.selectAll("circle")
+                .each(function(data) {
+                  
+                  if(data.org.indexOf(content) >= 0){
+                    d3.select(this).attr({
+                      "fill-opacity": 0.2,
+                      fill: self.fill_color_grayscale(data.group)
+                    });
+
+                  }
+                });
+            }
+
+
+          });  
+    }
     
     return BubbleChart;
 
   })();
   
-  var DataLabels = (function() {
-        
-        
-        // Constructor        
-        function DataLabels(data, container, width, height) {
-            this.selected = false;
-            this.fill_color = d3.scale.ordinal()
-              .domain(["Angel Round", "Seed Round", "Series A", "Series B", "Series C", "Series D", "Series E", "Series F", "Series G", "Private Equity"])
-              .range(["#72AEE3","#72AEE3", "#9DC6EB", "#C7DFF4", "#FCD800", "#FC9C00", "#FC4300",  "#FC4300", "#FC4300", "#6D992F"]);
-            this.fill_color_grayscale = d3.scale.ordinal()
-              .domain(["Angel Round", "Seed Round", "Series A", "Series B", "Series C", "Series D", "Series E", "Series F", "Series G", "Private Equity"])
-              .range(["#E1E2EF", "#CDCDCD"]);  
-
-            // Holdes the data
-            this.data = data;
-
-            // Width of label
-            this.labelWidth = width;
-            this.labelHeight = height;
-            
-            this.container = container;
-            this.vis = null;
-        }
-    
-        DataLabels.prototype.createNode = function () {
-
-        };
-
-
-        DataLabels.prototype.render = function () {
-            var self = this;
-
-            this.vis = d3.select(this.container + " svg");
-            
-            if(this.vis === null || this.vis === 'undefined') {
-                console.log("Vis is not loaded");
-            }
-
-            var startPointY = 50;
-            
-            
-            
-            var defs = this.vis.append("defs");
-
-            var filter = defs.append("filter")
-                .attr("id", "glow");
-            
-            // Title
-            this.vis.append("text")
-              .attr("x", 20)
-              .attr("y",startPointY)
-              .text("INVESTORS LIST:")
-              .attr("class","title system-font")
-              .attr("fill", "black");   
-
-            var lablesContainer = this.vis
-                            .selectAll("g")
-                            .data(this.data, function(d) {
-                                return d.id;
-                            })
-                            .enter().append("g")
-                            .attr("class","vc lable");
-            
-            var currentY = startPointY + 10,
-                counter = 0;
-            
-            lablesContainer.append("title")
-                .text(function(d) { return d.name; });
-
-            
-            lablesContainer.append("text")
-                .attr("x", 25)
-                .each(function (d){
-                    counter = counter + 1;
-                    title_class_pos = "odd";
-                    if( counter % 2  == 0) {
-                      title_class_pos = "even";
-                    }
-                    var tempY = currentY;
-                    currentY= currentY + 32;
-                    
-                    d3.select(this).attr({
-                        y: currentY,
-                        "class":  "investor "+ title_class_pos +" system-font",
-                        id: "vc-title-" + counter
-                    }).text("");    
-                })
-                .on("click", function(d, i){
-                  var content = this.textContent;
-                  
-                  if(!self.selected) {
-                    $("#startup_funding_tooltip").hide();
-                    self.selected = true;
-                    d3.selectAll("circle")
-                      .each(function(data) {
-                        
-                        if(data.org.indexOf(content) >= 0){
-                          d3.select(this).attr({
-                            "fill-opacity": 1,
-                            fill: self.fill_color(data.group)
-                          });
-
-                        }
-                      });
-                  } else {
-                    
-                    self.selected = false;
-                    d3.selectAll("circle")
-                      .each(function(data) {
-                        
-                        if(data.org.indexOf(content) >= 0){
-                          d3.select(this).attr({
-                            "fill-opacity": 0.2,
-                            fill: self.fill_color_grayscale(data.group)
-                          });
-
-                        }
-                      });
-                  }
-
-
-                });
-                
-        };
-
-        return DataLabels;
-  }());
-
   root = typeof exports !== "undefined" && exports !== null ? exports : this;
 
   
@@ -444,13 +409,9 @@
     var active_groups = ["seed", "series-a", "series-b", "series-d", "private"];
     var inactive_groups = [];
     chart = null;
-    lables = null;
     
-    render_lbl = function (json) {
-        
-        labels = new DataLabels(json, "#vis", 150, 40);
-        return labels.render();
-    }
+    
+    
 
     render_vis = function (csv) {
       chart = new BubbleChart(csv, "#vis", 1040, 600);
@@ -459,6 +420,9 @@
       return chart.display_by_group(active_groups);
     };
 
+    render_lable = function(json) {
+      return chart.lables_placeholder(json);
+    }
     root.display_group = (function(_this) {
       return function(list) {
         return chart.display_by_group(list);
@@ -488,7 +452,7 @@
 
       render_vis(data);
       // Render label
-      d3.json("data/labels.json", render_lbl);
+      d3.json("data/labels.json", render_lable);
 
     });
     

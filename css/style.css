@@ -34,14 +34,31 @@ circle.bubble {
   font-size: 60px;
 }
 
-text.investor.odd {
+text.vc-lable.odd {
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-weight: 400;
   font-size: 24px;
   fill: #02020A;
 }
 
-text.investor.even {
+text.vc-lable.even {
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-weight: 400;
   font-size: 24px;
-  /*fill: #7798AB;*/
+  fill: #5A7D7C;
+}
+
+text.company-lable.odd {
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  fill: #02020A;
+}
+
+text.company-lable.even {
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-weight: 400;
+  font-size: 24px;
   fill: #5A7D7C;
 }
 
@@ -66,7 +83,7 @@ footer {
 .tooltip {
 	position: absolute;
 	top: 160px;
-	left: 1200px;
+	left: 75%;
   /*-moz-border-radius:5px;
 	border-radius: 5px;*/
   /*border: 2px solid #000;*/

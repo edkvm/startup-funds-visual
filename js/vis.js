@@ -8,8 +8,6 @@
     function BubbleChart(data, container, width, height) {
       this.hide_details = __bind(this.hide_details, this);
       this.show_details = __bind(this.show_details, this);
-      this.hide_years = __bind(this.hide_years, this);
-      this.display_years = __bind(this.display_years, this);
       this.move_towards_year = __bind(this.move_towards_year, this);
       this.display_by_group = __bind(this.display_by_group, this);
       this.start = __bind(this.start, this);
@@ -51,7 +49,7 @@
 
       
       
-      this.radius_scale = d3.scale.pow().exponent(0.5).domain([0, max_amount]).range([4, 65]);
+      this.radius_scale = d3.scale.pow().exponent(0.5).domain([0, max_amount]).range([4, 60]);
       this.create_nodes();
       this.render();
     }
@@ -134,10 +132,11 @@
           
           d3.select(this).attr("fill-opacity", 0.8);
 
-          return self.show_details(d, i, this);
+          return self.show_details(d, 1, this);
         }
       })
       .on("mouseout", function(d, i) {
+        
         if(!self.selected) {
           for(var i = 1; i < 7; i++){
             d3.select("text#vc-title-" + i).text(""); 
@@ -287,15 +286,27 @@
       
     };
 
-    BubbleChart.prototype.show_details = function(data, i, element) {
+    /*BubbleChart.prototype.show_details = function(data, i, element) {
       var content;
       d3.select(element).attr("stroke", "black");
-      content = "<span class=\"name\"></span><span class=\"value\"> " + data.name + "</span><br/>";
-      content += "<span class=\"name\">Amount:</span><span class=\"value\"> $" + (addScale(data.value)) +  "</span><br/>";
-      content += "<span class=\"name\">Last Round:</span><span class=\"value\"> " + data.group + "</span><br/>";
-      content += "<span class=\"name\">Year:</span><span class=\"value\"> " + data.year + "</span>";
+      content = "<span class=\"name\"></span><span class=\"value\"> " + data.name + ", "+ data.group +", $" + (addScale(data.value))  + "</span><br/>";
+      //content += "<span class=\"name\">Amount:</span><span class=\"value\"> $" + (addScale(data.value)) +  "</span><br/>";
+      //content += "<span class=\"name\">Last Round:</span><span class=\"value\"> " + data.group + "</span><br/>";
+      //content += "<span class=\"name\">Year:</span><span class=\"value\"> " + data.year + "</span>";
 
       return this.tooltip.showTooltip(content, d3.event);
+    };*/
+
+    BubbleChart.prototype.show_details = function(data, i, element) {
+      
+      var content1, content2;
+      d3.select(element).attr("stroke", "black");
+      content1 = data.name;
+      content2 = data.group + ", $" + (addScale(data.value));
+      
+      d3.select("text#company-title-2").text(content2); 
+      return d3.select("text#company-title-1").text(content1);  
+      
     };
 
     BubbleChart.prototype.hide_details = function(data, i, element) {
@@ -314,6 +325,7 @@
       // Holdes the data
       var data = json;
       var startPointY = 50;
+      
       function drawTitle(vis, x, y, text) {
       
         // Title
@@ -324,76 +336,90 @@
           .attr("class","title system-font")
           .attr("fill", "black"); 
       }
-        
-      drawTitle(this.vis, 20, startPointY, "INVESTORS:");
-      drawTitle(this.vis, 840, startPointY, "COMPANIES:");
-      var lablesContainer = this.vis
-                      .selectAll("g")
-                      .data(data, function(d) {
-                          return d.id;
-                      })
-                      .enter().append("g")
-                      .attr("class","vc lable");
-      
-      var currentY = startPointY + 10,
-          counter = 0;
-      
-      lablesContainer.append("title")
-          .text(function(d) { return d.name; });
-
-      
-      lablesContainer.append("text")
-          .attr("x", 25)
-          .each(function (d){
-              counter = counter + 1;
-              title_class_pos = "odd";
-              if( counter % 2  == 0) {
-                title_class_pos = "even";
+       
+      function companySelector(element) {
+        var content = element.textContent;
+        var counter = 1;
+        if(!self.investorSelected) {
+          self.investorSelected = true;
+          d3.selectAll("circle")
+            .each(function(data) {
+              
+              if(data.org.indexOf(content) >= 0){
+                counter = counter + 1;
+                d3.select(this).attr({
+                  "fill-opacity": 1,
+                  fill: self.fill_color(data.group)
+                });
+                self.show_details(data, counter, this);
               }
-              var tempY = currentY;
-              currentY= currentY + 32;
+            });
+        } else {
+          
+          self.investorSelected = false;
+          d3.selectAll("circle")
+            .each(function(data) {
               
-              d3.select(this).attr({
-                  y: currentY,
-                  "class":  "investor "+ title_class_pos +" system-font",
-                  id: "vc-title-" + counter
-              }).text("");    
-          })
-          .on("click", function(d, i){
-            var content = this.textContent;
-            var count = 1;
-            if(!this.investorSelected) {
-              $("#startup_funding_tooltip").hide();
-              self.investorSelected = true;
-              d3.selectAll("circle")
-                .each(function(data) {
-                  
-                  if(data.org.indexOf(content) >= 0){
-                    d3.select(this).attr({
-                      "fill-opacity": 1,
-                      fill: self.fill_color(data.group)
-                    });
-
-                  }
+              if(data.org.indexOf(content) >= 0){
+                d3.select(this).attr({
+                  "fill-opacity": 0.2,
+                  fill: self.fill_color_grayscale(data.group)
                 });
-            } else {
+
+              }
+            });
+        }  
+      } 
+
+      function generatelablesContainer(vis, data, css, itemId, x, y, clickExecutor) {
+        
+        var lablesContainer = vis
+                        .selectAll("g."+css)
+                        .data(data, function(d) {
+
+                            return d.id;
+                        })
+                        .enter().append("g")
+                        .attr("class",css);
+        
+        var currentY = y + 10,
+            counter = 0;
+        
+        /*lablesContainer.append("title")
+            .text(function(d) { return d.name; });*/
+
+        
+        lablesContainer.append("text")
+            .attr("x", x)
+            .each(function (d){
+              console.log(itemId);
+                counter = counter + 1;
+                title_class_pos = "odd";
+                if( counter % 2  == 0) {
+                  title_class_pos = "even";
+                }
+                var tempY = currentY;
+                currentY= currentY + 32;
+                
+                d3.select(this).attr({
+                    y: currentY,
+                    "class":  css + " " + title_class_pos,
+                    id: itemId + counter
+                }).text("");    
+            })
+            .on("click", function(d, i){
               
-              self.investorSelected = false;
-              d3.selectAll("circle")
-                .each(function(data) {
-                  
-                  if(data.org.indexOf(content) >= 0){
-                    d3.select(this).attr({
-                      "fill-opacity": 0.2,
-                      fill: self.fill_color_grayscale(data.group)
-                    });
+              if(clickExecutor !== 'undefined') {
+                clickExecutor(this);  
+              }
+            });  
+      }
 
-                  }
-                });
-            }
-
-
-          });  
+      drawTitle(this.vis, 20, startPointY, "INVESTORS:");
+      drawTitle(this.vis, 795, startPointY, "COMPANY:");
+      generatelablesContainer(this.vis, data, "vc-lable","vc-title-", 25, startPointY);
+      generatelablesContainer(this.vis, data, "company-lable","company-title-", 800, startPointY);
+      
     }
     
     return BubbleChart;
